@@ -11,17 +11,29 @@ import (
 	"strconv"
 )
 
+type Handlers struct {
+	dbc DBConnexion
+}
+
+func NewHandlers(connString string) (*Handlers, error) {
+	r, err := NewRegistry(connString)
+	if err != nil {
+		log.Fatalf("Failed to create Registry: %v", err)
+	}
+	return &Handlers{r}, nil
+}
+
 func isText(u User) bool {
 	re := regexp.MustCompile(`[a-zA-Z]`)
 	return re.MatchString(u.Name) && re.MatchString(u.Surname)
 }
 
-func healthCheck(w http.ResponseWriter, r *http.Request) {
+func (h *Handlers) healthCheck(w http.ResponseWriter, r *http.Request) {
 	log.Println("Heathcheck")
 	w.WriteHeader(http.StatusOK)
 }
 
-func createUser(w http.ResponseWriter, r *http.Request) {
+func (h *Handlers) createUser(w http.ResponseWriter, r *http.Request) {
 	log.Println("Trying to create")
 	b, _ := io.ReadAll(r.Body)
 	var u User
@@ -40,11 +52,11 @@ func createUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = reg.AddUser(u.Name, u.Surname, u.Position, u.Project)
+	err = h.dbc.AddUser(u.Name, u.Surname, u.Position, u.Project)
 	w.WriteHeader(http.StatusOK)
 }
 
-func deleteUser(w http.ResponseWriter, r *http.Request) {
+func (h *Handlers) deleteUser(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 	log.Println("Trying to delete", id)
 	if id == "" {
@@ -54,7 +66,7 @@ func deleteUser(w http.ResponseWriter, r *http.Request) {
 	}
 	val, _ := strconv.Atoi(id)
 
-	err := reg.DeleteUser(val)
+	err := h.dbc.DeleteUser(val)
 	if err != nil {
 		log.Println(err)
 		fmt.Fprintf(w, "%s", err)
@@ -63,7 +75,7 @@ func deleteUser(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "delete has been successful")
 }
 
-func updateUser(w http.ResponseWriter, r *http.Request) {
+func (h *Handlers) updateUser(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 	log.Println("Trying to update", id)
 
@@ -97,7 +109,7 @@ func updateUser(w http.ResponseWriter, r *http.Request) {
 	if u.Name != "" {
 		m["project"] = u.Project
 	}
-	err = reg.UpdateUser(val, m)
+	err = h.dbc.UpdateUser(val, m)
 	if err != nil {
 		log.Println(err)
 		fmt.Fprintf(w, "%s", err)
@@ -106,12 +118,12 @@ func updateUser(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "update has been successful")
 }
 
-func getUser(w http.ResponseWriter, r *http.Request) {
+func (h *Handlers) getUser(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 	log.Println("Trying to get", id)
 	val, _ := strconv.Atoi(id)
 
-	u, err := reg.GetUser(val)
+	u, err := h.dbc.GetUser(val)
 	if err != nil {
 		log.Println(err)
 		fmt.Fprintf(w, "%s", err)
@@ -121,15 +133,16 @@ func getUser(w http.ResponseWriter, r *http.Request) {
 		u.Name, u.Surname, dGrades[u.Position], u.Project)
 }
 
-func getUserList(w http.ResponseWriter, r *http.Request) {
+func (h *Handlers) getUserList(w http.ResponseWriter, r *http.Request) {
 	log.Println("Trying to get all user list")
-	us, err := reg.GetAllUsers()
+	us, err := h.dbc.GetAllUsers()
 	if err != nil {
 		log.Println(err)
 		fmt.Fprintf(w, "%s", err)
 		return
 	}
 	for _, u := range *us {
+		json.Marshal(u)
 		fmt.Fprintf(w, "name: %s, surname: %s, position: %s, project: %s\r\n",
 			u.Name, u.Surname, dGrades[u.Position], u.Project)
 	}

@@ -1,4 +1,4 @@
-module sample01
+module github.com/Quirxx2/AndersenPromo
 
 go 1.20
 

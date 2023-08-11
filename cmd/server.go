@@ -1,32 +1,28 @@
 package main
 
 import (
-	"github.com/Quirxx2/AndersenPromo/internal"
+	_ "github.com/Quirxx2/AndersenPromo/internal"
 	"github.com/gorilla/mux"
 	"log"
 	"net/http"
 )
 
-var reg *Registry
-
 func main() {
 	serverHost := ":8080"
 	connString := "postgres://usr:password@localhost:5432/registry"
 
-	router := mux.NewRouter()
-	router.HandleFunc("/healthcheck", healthCheck).Methods(http.MethodGet)
-	router.HandleFunc("/create", createUser).Methods(http.MethodPost)
-	router.HandleFunc("/delete/{id}", deleteUser).Methods(http.MethodDelete)
-	router.HandleFunc("/update/{id}", updateUser).Methods(http.MethodPatch)
-	router.HandleFunc("/get/{id}", getUser).Methods(http.MethodGet)
-	router.HandleFunc("/getall", getUserList).Methods(http.MethodGet)
-
-	r, err := NewRegistry(connString)
+	c, err := NewHandlers(connString)
 	if err != nil {
-		log.Fatalf("Failed to create Registry: %v", err)
+		log.Fatalf("Failed to create Handlers: %v", err)
 	}
-	reg = r
-	log.Println(r)
+
+	router := mux.NewRouter()
+	router.HandleFunc("/healthcheck", c.healthCheck).Methods(http.MethodGet)
+	router.HandleFunc("/create", c.createUser).Methods(http.MethodPost)
+	router.HandleFunc("/delete/{id}", c.deleteUser).Methods(http.MethodDelete)
+	router.HandleFunc("/update/{id}", c.updateUser).Methods(http.MethodPatch)
+	router.HandleFunc("/get/{id}", c.getUser).Methods(http.MethodGet)
+	router.HandleFunc("/getall", c.getUserList).Methods(http.MethodGet)
 
 	srv := &http.Server{
 		Handler: router,

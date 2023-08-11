@@ -11,11 +11,18 @@ import (
 	"strings"
 )
 
+type DBConnexion interface {
+	AddUser(string, string, Grade, string) error
+	DeleteUser(int) error
+	UpdateUser(int, map[string]string) error
+	GetUser(int) (*User, error)
+	GetAllUsers() (*[]User, error)
+}
+
 type Registry struct {
 	p pool
 }
 
-// Interface for ease of mocking, exposing only used methods of pgxpool.Pool
 type pool interface {
 	Ping(context.Context) error
 	Exec(context.Context, string, ...any) (pgconn.CommandTag, error)
