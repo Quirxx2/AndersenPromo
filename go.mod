@@ -5,6 +5,8 @@ go 1.20
 require (
 	github.com/gorilla/mux v1.8.0
 	github.com/jackc/pgx/v5 v5.4.3
+	github.com/swaggo/http-swagger/example/gorilla v0.0.0-20230327134356-bc837951e6c7
+	github.com/swaggo/http-swagger/v2 v2.0.1
 	github.com/swaggo/swag v1.16.1
 	golang.org/x/exp v0.0.0-20230810033253-352e893a4cad
 )
@@ -21,6 +23,7 @@ require (
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/rogpeppe/go-internal v1.11.0 // indirect
+	github.com/swaggo/files/v2 v2.0.0 // indirect
 	golang.org/x/crypto v0.12.0 // indirect
 	golang.org/x/sync v0.3.0 // indirect
 	golang.org/x/sys v0.11.0 // indirect
