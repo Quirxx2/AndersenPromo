@@ -1,4 +1,4 @@
-module github.com/Quirxx2/AndersenPromo
+module AndersenPromo
 
 go 1.20
 
@@ -22,6 +22,7 @@ require (
 	github.com/jackc/puddle/v2 v2.2.1 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
+	github.com/pashagolub/pgxmock/v2 v2.10.0 // indirect
 	github.com/rogpeppe/go-internal v1.11.0 // indirect
 	github.com/swaggo/files/v2 v2.0.0 // indirect
 	golang.org/x/crypto v0.12.0 // indirect

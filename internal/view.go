@@ -60,16 +60,16 @@ func (h *Handlers) CreateUser(w http.ResponseWriter, r *http.Request) {
 	var u User
 	err := json.Unmarshal(b, &u)
 	if err != nil {
-		http.Error(w, fmt.Sprintf("%v", err), http.StatusInternalServerError)
+		http.Error(w, fmt.Sprintf("%v", err), http.StatusBadRequest)
 		return
 	}
 
 	if !isText(u) {
-		http.Error(w, "invalid name and/or surname", http.StatusInternalServerError)
+		http.Error(w, "invalid name and/or surname", http.StatusBadRequest)
 		return
 	}
 	if dGrades[u.Position] == "" {
-		http.Error(w, "illegal position", http.StatusInternalServerError)
+		http.Error(w, "illegal position", http.StatusBadRequest)
 		return
 	}
 
@@ -101,9 +101,14 @@ func (h *Handlers) DeleteUser(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "empty index", http.StatusBadRequest)
 		return
 	}
-	val, _ := strconv.Atoi(id)
+	val, err := strconv.Atoi(id)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, fmt.Sprintf("%v", err), http.StatusBadRequest)
+		return
+	}
 
-	err := h.dbc.DeleteUser(val)
+	err = h.dbc.DeleteUser(val)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, fmt.Sprintf("%v", err), http.StatusInternalServerError)
@@ -132,17 +137,22 @@ func (h *Handlers) UpdateUser(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "empty index", http.StatusBadRequest)
 		return
 	}
-	val, _ := strconv.Atoi(id)
+	val, err := strconv.Atoi(id)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, fmt.Sprintf("%v", err), http.StatusBadRequest)
+		return
+	}
 	b, _ := io.ReadAll(r.Body)
 	var u User
-	err := json.Unmarshal(b, &u)
+	err = json.Unmarshal(b, &u)
 	if err != nil {
-		http.Error(w, fmt.Sprintf("%v", err), http.StatusInternalServerError)
+		http.Error(w, fmt.Sprintf("%v", err), http.StatusBadRequest)
 		return
 	}
 
 	if !isText(u) {
-		http.Error(w, "invalid name and/or surname", http.StatusInternalServerError)
+		http.Error(w, "invalid name and/or surname", http.StatusBadRequest)
 		return
 	}
 	m := make(map[string]string)
@@ -181,7 +191,16 @@ func (h *Handlers) UpdateUser(w http.ResponseWriter, r *http.Request) {
 func (h *Handlers) GetUser(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 	log.Println("Trying to get", id)
-	val, _ := strconv.Atoi(id)
+	if id == "" {
+		http.Error(w, "empty index", http.StatusBadRequest)
+		return
+	}
+	val, err := strconv.Atoi(id)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, fmt.Sprintf("%v", err), http.StatusBadRequest)
+		return
+	}
 
 	u, err := h.dbc.GetUser(val)
 	if err != nil {
@@ -196,7 +215,7 @@ func (h *Handlers) GetUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	r.Header.Set("Content-Type", "application/json")
-	w.Write(content)
+	_, _ = w.Write(content)
 	/*fmt.Fprintf(w, "name: %s, surname: %s, position: %s, project: %s",
 	u.Name, u.Surname, dGrades[u.Position], u.Project)
 
@@ -229,7 +248,7 @@ func (h *Handlers) GetUserList(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	r.Header.Set("Content-Type", "application/json")
-	w.Write(content)
+	_, _ = w.Write(content)
 
 	/*for _, u := range *us {
 		json.Marshal(u)
