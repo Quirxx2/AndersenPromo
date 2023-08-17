@@ -24,7 +24,7 @@ func NewHandlers(connString string) (*Handlers, error) {
 }
 
 func isText(u User) bool {
-	re := regexp.MustCompile(`[a-zA-Z]`)
+	re := regexp.MustCompile(`^[a-zA-Z]+$`)
 	return re.MatchString(u.Name) && re.MatchString(u.Surname)
 }
 
@@ -114,7 +114,7 @@ func (h *Handlers) DeleteUser(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, fmt.Sprintf("%v", err), http.StatusInternalServerError)
 		return
 	}
-	fmt.Fprintf(w, "delete has been successful")
+	w.WriteHeader(http.StatusOK)
 }
 
 // UpdateUser	 godoc
@@ -144,6 +144,9 @@ func (h *Handlers) UpdateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	b, _ := io.ReadAll(r.Body)
+	//------------------------------------------------------------
+	log.Println(b)
+	//------------------------------------------------------------
 	var u User
 	err = json.Unmarshal(b, &u)
 	if err != nil {
@@ -162,6 +165,7 @@ func (h *Handlers) UpdateUser(w http.ResponseWriter, r *http.Request) {
 	if u.Surname != "" {
 		m["surname"] = u.Surname
 	}
+	log.Println("dGrades[u.Position] =", dGrades[u.Position])
 	if dGrades[u.Position] != "" {
 		m["position"] = dGrades[u.Position]
 	}
@@ -174,7 +178,7 @@ func (h *Handlers) UpdateUser(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, fmt.Sprintf("%v", err), http.StatusInternalServerError)
 		return
 	}
-	fmt.Fprintf(w, "update has been successful")
+	w.WriteHeader(http.StatusOK)
 }
 
 // GetUser	 	 godoc
@@ -185,6 +189,7 @@ func (h *Handlers) UpdateUser(w http.ResponseWriter, r *http.Request) {
 // @Produce      json
 // @Param        id				int	"User ID"
 // @Success      200  {object}	Handlers.User
+// @Failure      400  {object}	Error
 // @Failure      500  {object}	Error
 // @Router       /get/{id}		[get]
 
@@ -215,11 +220,9 @@ func (h *Handlers) GetUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	r.Header.Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
 	_, _ = w.Write(content)
-	/*fmt.Fprintf(w, "name: %s, surname: %s, position: %s, project: %s",
-	u.Name, u.Surname, dGrades[u.Position], u.Project)
-
-	*/
+	log.Println(content)
 }
 
 // GetUserList	 godoc
@@ -248,13 +251,7 @@ func (h *Handlers) GetUserList(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	r.Header.Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
 	_, _ = w.Write(content)
-
-	/*for _, u := range *us {
-		json.Marshal(u)
-		fmt.Fprintf(w, "name: %s, surname: %s, position: %s, project: %s\r\n",
-			u.Name, u.Surname, dGrades[u.Position], u.Project)
-	}
-
-	*/
+	log.Println(content)
 }
