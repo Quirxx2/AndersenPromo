@@ -1,0 +1,12 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "API server for Andersen Promo Application",
+        "title": "Andersen Promo API",
+        "contact": {},
+        "version": "1.0"
+    },
+    "host": "localhost:8080",
+    "basePath": "/cmd",
+    "paths": {}
+}
