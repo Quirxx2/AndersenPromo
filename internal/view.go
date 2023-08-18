@@ -39,7 +39,7 @@ func isText(u User) bool {
 // @Router       /healthcheck [get]
 
 func (h *Handlers) HealthCheck(w http.ResponseWriter, r *http.Request) {
-	log.Println("Heathcheck")
+	//log.Println("Healthcheck")
 	w.WriteHeader(http.StatusOK)
 }
 
@@ -55,7 +55,7 @@ func (h *Handlers) HealthCheck(w http.ResponseWriter, r *http.Request) {
 // @Router       /create [post]
 
 func (h *Handlers) CreateUser(w http.ResponseWriter, r *http.Request) {
-	log.Println("Trying to create")
+	//log.Println("Trying to create")
 	b, _ := io.ReadAll(r.Body)
 	var u User
 	err := json.Unmarshal(b, &u)
@@ -75,7 +75,7 @@ func (h *Handlers) CreateUser(w http.ResponseWriter, r *http.Request) {
 
 	err = h.dbc.AddUser(u.Name, u.Surname, u.Position, u.Project)
 	if err != nil {
-		log.Println(err)
+		//log.Println(err)
 		http.Error(w, fmt.Sprintf("%v", err), http.StatusInternalServerError)
 		return
 	}
@@ -96,21 +96,21 @@ func (h *Handlers) CreateUser(w http.ResponseWriter, r *http.Request) {
 
 func (h *Handlers) DeleteUser(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
-	log.Println("Trying to delete", id)
+	//log.Println("Trying to delete", id)
 	if id == "" {
 		http.Error(w, "empty index", http.StatusBadRequest)
 		return
 	}
 	val, err := strconv.Atoi(id)
 	if err != nil {
-		log.Println(err)
+		//log.Println(err)
 		http.Error(w, fmt.Sprintf("%v", err), http.StatusBadRequest)
 		return
 	}
 
 	err = h.dbc.DeleteUser(val)
 	if err != nil {
-		log.Println(err)
+		//log.Println(err)
 		http.Error(w, fmt.Sprintf("%v", err), http.StatusInternalServerError)
 		return
 	}
@@ -131,7 +131,7 @@ func (h *Handlers) DeleteUser(w http.ResponseWriter, r *http.Request) {
 
 func (h *Handlers) UpdateUser(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
-	log.Println("Trying to update", id)
+	//log.Println("Trying to update", id)
 
 	if id == "" {
 		http.Error(w, "empty index", http.StatusBadRequest)
@@ -139,17 +139,15 @@ func (h *Handlers) UpdateUser(w http.ResponseWriter, r *http.Request) {
 	}
 	val, err := strconv.Atoi(id)
 	if err != nil {
-		log.Println(err)
+		//log.Println(err)
 		http.Error(w, fmt.Sprintf("%v", err), http.StatusBadRequest)
 		return
 	}
 	b, _ := io.ReadAll(r.Body)
-	//------------------------------------------------------------
-	log.Println(b)
-	//------------------------------------------------------------
 	var u User
 	err = json.Unmarshal(b, &u)
 	if err != nil {
+		//log.Println(err)
 		http.Error(w, fmt.Sprintf("%v", err), http.StatusBadRequest)
 		return
 	}
@@ -165,7 +163,7 @@ func (h *Handlers) UpdateUser(w http.ResponseWriter, r *http.Request) {
 	if u.Surname != "" {
 		m["surname"] = u.Surname
 	}
-	log.Println("dGrades[u.Position] =", dGrades[u.Position])
+	//log.Println("dGrades[u.Position] =", dGrades[u.Position])
 	if dGrades[u.Position] != "" {
 		m["position"] = dGrades[u.Position]
 	}
@@ -174,7 +172,7 @@ func (h *Handlers) UpdateUser(w http.ResponseWriter, r *http.Request) {
 	}
 	err = h.dbc.UpdateUser(val, m)
 	if err != nil {
-		log.Println(err)
+		//log.Println(err)
 		http.Error(w, fmt.Sprintf("%v", err), http.StatusInternalServerError)
 		return
 	}
@@ -195,14 +193,14 @@ func (h *Handlers) UpdateUser(w http.ResponseWriter, r *http.Request) {
 
 func (h *Handlers) GetUser(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
-	log.Println("Trying to get", id)
+	//log.Println("Trying to get", id)
 	if id == "" {
 		http.Error(w, "empty index", http.StatusBadRequest)
 		return
 	}
 	val, err := strconv.Atoi(id)
 	if err != nil {
-		log.Println(err)
+		//log.Println(err)
 		http.Error(w, fmt.Sprintf("%v", err), http.StatusBadRequest)
 		return
 	}
@@ -213,16 +211,10 @@ func (h *Handlers) GetUser(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, fmt.Sprintf("%v", err), http.StatusInternalServerError)
 		return
 	}
-	content, err := json.Marshal(u)
-	if err != nil {
-		log.Println("Marshalling error")
-		http.Error(w, "marshalling error", http.StatusInternalServerError)
-		return
-	}
+	content, _ := json.Marshal(u)
 	r.Header.Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	_, _ = w.Write(content)
-	log.Println(content)
 }
 
 // GetUserList	 godoc
@@ -237,21 +229,15 @@ func (h *Handlers) GetUser(w http.ResponseWriter, r *http.Request) {
 // @Router       /getall [get]
 
 func (h *Handlers) GetUserList(w http.ResponseWriter, r *http.Request) {
-	log.Println("Trying to get all user list")
+	// log.Println("Trying to get all user list")
 	us, err := h.dbc.GetAllUsers()
 	if err != nil {
-		log.Println(err)
+		//log.Println(err)
 		http.Error(w, fmt.Sprintf("%v", err), http.StatusInternalServerError)
 		return
 	}
-	content, err := json.Marshal(*us)
-	if err != nil {
-		log.Println("Marshalling error")
-		http.Error(w, "marshalling error", http.StatusInternalServerError)
-		return
-	}
+	content, _ := json.Marshal(*us)
 	r.Header.Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	_, _ = w.Write(content)
-	log.Println(content)
 }

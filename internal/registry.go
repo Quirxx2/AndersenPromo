@@ -7,7 +7,6 @@ import (
 	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"golang.org/x/exp/slices"
-	"log"
 	"strings"
 )
 
@@ -72,7 +71,7 @@ func (r *Registry) DeleteUser(id int) (err error) {
 
 func (r *Registry) UpdateUser(id int, m map[string]string) (err error) {
 	fields := []string{"name", "surname", "position", "project"}
-	s := []string{}
+	var s []string
 	for k, v := range m {
 		if !slices.Contains(fields, k) {
 			return fmt.Errorf("illegal key in the map")
@@ -104,21 +103,22 @@ func (r *Registry) GetUser(id int) (*User, error) {
 }
 
 func (r *Registry) GetAllUsers() (*[]User, error) {
-	rows, err := r.p.Query(context.Background(), "SELECT * FROM usr")
+	rows, err := r.p.Query(context.Background(), "SELECT id, name, surname, position, project FROM usr")
 	if err != nil {
 		return nil, fmt.Errorf("unable to SELECT all users FROM usr: %w", err)
 	}
-	log.Println("Printing rows")
+	//log.Println("Printing rows")
 	u := &User{}
 	var us []User
 	var pos string
 
-	tr, err := pgx.ForEachRow(rows, []any{&u.Id, &u.Name, &u.Surname, &pos, &u.Project}, func() error {
+	_, err = pgx.ForEachRow(rows, []any{&u.Id, &u.Name, &u.Surname, &pos, &u.Project}, func() error {
 		u.Position = bGrades[pos]
 		us = append(us, *u)
 		return nil
 	})
-	if err != nil || int(tr.RowsAffected()) != len(us) {
+	//|| int(tr.RowsAffected()) != len(us)
+	if err != nil {
 		return nil, fmt.Errorf("unable to convert request into names list: %w", err)
 	}
 	return &us, nil

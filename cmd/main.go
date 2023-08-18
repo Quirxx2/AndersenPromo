@@ -33,8 +33,8 @@ func main() {
 	router.HandleFunc("/update/{id}", c.UpdateUser).Methods(http.MethodPatch)
 	router.HandleFunc("/get/{id}", c.GetUser).Methods(http.MethodGet)
 	router.HandleFunc("/getall", c.GetUserList).Methods(http.MethodGet)
-	router.PathPrefix("/swagger/").Handler(httpSwagger.Handler(
-		httpSwagger.URL("http://localhost:1323/swagger/doc.json"), //The url pointing to API definition
+	router.PathPrefix("/swagger").Handler(httpSwagger.Handler(
+		httpSwagger.URL("http://localhost:8080//doc.json"), //The url pointing to API definition
 		httpSwagger.DeepLinking(true),
 		httpSwagger.DocExpansion("none"),
 		httpSwagger.DomID("swagger-ui"),
