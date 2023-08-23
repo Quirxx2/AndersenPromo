@@ -1,6 +1,7 @@
 version: '3.8'
 services:
   promo:
+    user: ${HOST_UID:?"Export HOST_UID, HOST_UID=$(id -u):$(id -g)"}
     image: promo
     build: .
     ports:
@@ -9,6 +10,10 @@ services:
       db:
         condition: service_healthy
   db:
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=registry
     image: postgres
     restart: always
     ports:

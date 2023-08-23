@@ -29,31 +29,26 @@ func isText(u User) bool {
 }
 
 // HealthCheck	 godoc
-// @Summary      Checking availability
-// @Description  get availability status
-// @Tags         users
-// @Accept       nothing
-// @Produce      nothing
-// @Param        nothing
-// @Success      200
-// @Router       /healthcheck [get]
-
+//
+//	@Summary		Checking availability
+//	@Description	get availability status
+//	@Tags			users
+//	@Success		200
+//	@Router			/healthcheck [get]
 func (h *Handlers) HealthCheck(w http.ResponseWriter, r *http.Request) {
 	//log.Println("Healthcheck")
 	w.WriteHeader(http.StatusOK)
 }
 
 // CreateUser	 godoc
-// @Summary      Create new user
-// @Description  set new user
-// @Tags         users
-// @Accept       json
-// @Produce      nothing
-// @Param        nothing
-// @Success      200  {object}  Handlers.User
-// @Failure      500  Error
-// @Router       /create [post]
-
+//
+//	@Summary		Create new user
+//	@Description	set new user
+//	@Tags			users
+//	@Accept			json
+//	@Success		200	{object}	User
+//	@Failure		500	{object}	string
+//	@Router			/create [post]
 func (h *Handlers) CreateUser(w http.ResponseWriter, r *http.Request) {
 	//log.Println("Trying to create")
 	b, _ := io.ReadAll(r.Body)
@@ -83,17 +78,15 @@ func (h *Handlers) CreateUser(w http.ResponseWriter, r *http.Request) {
 }
 
 // DeleteUser	 godoc
-// @Summary      Delete user
-// @Description  remove user
-// @Tags         users
-// @Accept       nothing
-// @Produce      nothing
-// @Param        id   int "User ID"
-// @Success      200
-// @Failure      400  Error
-// @Failure      500  Error
-// @Router       /delete/{id}	[delete]
-
+//
+//	@Summary		Delete user
+//	@Description	remove user
+//	@Tags			users
+//	@Param			id	path	int	true	"User ID"
+//	@Success		200
+//	@Failure		400				{object}	string
+//	@Failure		500				{object}	string
+//	@Router			/delete/{id}	[delete]
 func (h *Handlers) DeleteUser(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 	//log.Println("Trying to delete", id)
@@ -118,17 +111,16 @@ func (h *Handlers) DeleteUser(w http.ResponseWriter, r *http.Request) {
 }
 
 // UpdateUser	 godoc
-// @Summary      Update user
-// @Description  change user
-// @Tags         users
-// @Accept       json
-// @Produce      nothing
-// @Param        id   int "User ID"
-// @Success      200  {object}  Handlers.User
-// @Failure      400  Error
-// @Failure      500  Error
-// @Router       /update/{id}	[update]
-
+//
+//	@Summary		Update user
+//	@Description	change user
+//	@Tags			users
+//	@Accept			json
+//	@Param			id				path		int	true	"User ID"
+//	@Success		200				{object}	User
+//	@Failure		400				{object}	string
+//	@Failure		500				{object}	string
+//	@Router			/update/{id}	[patch]
 func (h *Handlers) UpdateUser(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 	//log.Println("Trying to update", id)
@@ -180,17 +172,16 @@ func (h *Handlers) UpdateUser(w http.ResponseWriter, r *http.Request) {
 }
 
 // GetUser	 	 godoc
-// @Summary      Get user
-// @Description  get user by id
-// @Tags         users
-// @Accept       nothing
-// @Produce      json
-// @Param        id				int	"User ID"
-// @Success      200  {object}	Handlers.User
-// @Failure      400  {object}	Error
-// @Failure      500  {object}	Error
-// @Router       /get/{id}		[get]
-
+//
+//	@Summary		Get user
+//	@Description	get user by id
+//	@Tags			users
+//	@Produce		json
+//	@Param			id			path		int	true	"User ID"
+//	@Success		200			{object}	User
+//	@Failure		400			{object}	string
+//	@Failure		500			{object}	string
+//	@Router			/get/{id}																						[get]
 func (h *Handlers) GetUser(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 	//log.Println("Trying to get", id)
@@ -218,16 +209,14 @@ func (h *Handlers) GetUser(w http.ResponseWriter, r *http.Request) {
 }
 
 // GetUserList	 godoc
-// @Summary      List users
-// @Description  get users
-// @Tags         users
-// @Accept       nothing
-// @Produce      json
-// @Param        nothing
-// @Success      200  {array}   Handlers.User
-// @Failure      500  {object}	Error
-// @Router       /getall [get]
-
+//
+//	@Summary		List users
+//	@Description	get users
+//	@Tags			users
+//	@Produce		json
+//	@Success		200	{array}		User
+//	@Failure		500	{object}	string
+//	@Router			/getall [get]
 func (h *Handlers) GetUserList(w http.ResponseWriter, r *http.Request) {
 	// log.Println("Trying to get all user list")
 	us, err := h.dbc.GetAllUsers()
